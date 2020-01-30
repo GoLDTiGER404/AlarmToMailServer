@@ -7,16 +7,16 @@ using System.Threading.Tasks;
 
 namespace AlarmToMailServer.TimeTask
 {
-    public class ServerSchedule
+    public class EventToDayServerSchedule
     {
 
         private readonly ISchedulerFactory _schedulerFactory;
         private IScheduler _scheduler;
-        public ServerSchedule(ISchedulerFactory schedulerFactory)
+        public EventToDayServerSchedule(ISchedulerFactory schedulerFactory)
         {
             this._schedulerFactory = schedulerFactory;
         }
-        public async Task TaskRun()
+        public async Task TaskRun(string TaskTime)
         {
             //1、通过调度工厂获得调度器
             _scheduler = await _schedulerFactory.GetScheduler();
@@ -24,13 +24,11 @@ namespace AlarmToMailServer.TimeTask
             await _scheduler.Start();
             //3、创建一个触发器
             var trigger = TriggerBuilder.Create()
-                          .StartNow()
-                .WithSimpleSchedule(b => b.WithIntervalInSeconds(20)
-                .RepeatForever())//无限循环执行
-                .Build();
+                            .WithCronSchedule(TaskTime)
+                            .Build();
             //4、创建任务
-            var jobDetail = JobBuilder.Create<TaskJob>()
-                            .WithIdentity("job", "group")
+            var jobDetail = JobBuilder.Create<TaskEventToDay>()
+                            .WithIdentity("jobeventtoday", "group")
                             .Build();
             //5、将触发器和任务器绑定到调度器中
             await _scheduler.ScheduleJob(jobDetail, trigger);

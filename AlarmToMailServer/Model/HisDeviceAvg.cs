@@ -5,8 +5,9 @@ using System.Threading.Tasks;
 
 namespace AlarmToMailServer.Model
 {
-    public class HisDevice
+    public class HisDeviceAvg
     {
+        public string DeviceCode { get; set; }
         public string ID { get; set; }
         public DateTime HisTime { get; set; }
         public Single? nMode { get; set; }

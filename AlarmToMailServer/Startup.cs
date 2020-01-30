@@ -22,7 +22,9 @@ namespace AlarmToMailServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddTransient(typeof(ServerSchedule));
+            services.AddTransient(typeof(DayServerSchedule));
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();//×¢²áISchedulerFactoryµÄÊµÀý¡£
+            ATMSHttpContext.ServiceProvider = services.BuildServiceProvider();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

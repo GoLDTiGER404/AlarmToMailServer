@@ -13,22 +13,22 @@ using System.ComponentModel.DataAnnotations;
 
 namespace ZGAutoCenter.TimeTask
 {
-    public class SqlHelp
+    public class SqlHelpAsync
     {
         string url;
-        public SqlHelp(string Url)
+        public SqlHelpAsync(string Url)
         {
             url = Url;
         }
 
-        public List<T> GetList<T>()
+        public async Task<List<T>> GetList<T>()
         {
             using (SqlConnection connection = new SqlConnection(url))
             {
                 System.Type t = typeof(T);
                 Assembly ass = Assembly.GetAssembly(t);//获取泛型程序集
                 List<T> tlist = new List<T>();
-                connection.Open();
+                await connection.OpenAsync();
                 string tablename =   typeof(T).Name;
                 string sql = $"SELECT * FROM {tablename}";
                 var dt = UrlSqlExcute(sql, connection);
@@ -88,14 +88,14 @@ namespace ZGAutoCenter.TimeTask
         }
 
 
-        public List<T> GetListByFilter<T>(string fliter)
+        public async Task<List<T>> GetListByFilter<T>(string fliter)
         {
             using (SqlConnection connection = new SqlConnection(url))
             {
                 System.Type t = typeof(T);
                 Assembly ass = Assembly.GetAssembly(t);//获取泛型程序集
                 List<T> tlist = new List<T>();
-                connection.Open();
+                await connection.OpenAsync();
                 string sql = fliter;
                 var dt = UrlSqlExcute(sql, connection);
                 if (dt.Rows.Count < 1) return null;
@@ -157,11 +157,11 @@ namespace ZGAutoCenter.TimeTask
 
 
 
-        public void InsertOne<T>(T e)
+        public async Task InsertOne<T>(T e)
         {
             using (SqlConnection connection = new SqlConnection(url))
             {
-                connection.Open();
+                await connection.OpenAsync();
                 string tablename =   e.GetType().Name;
                 string colname = "";
                 string value = "";
@@ -189,16 +189,16 @@ namespace ZGAutoCenter.TimeTask
                 colname = colname.Substring(0, colname.Length - 1);
                 value = value.Substring(0, value.Length - 1);
                 string sql = $"INSERT INTO {tablename} ({colname}) VALUES({value})";
-                UrlSqlExcuteq(sql, connection);
+                await UrlSqlExcuteq(sql, connection);
             }
         }
 
 
-        public void Update<T>(T e)
+        public async Task Update<T>(T e)
         {
             using (SqlConnection connection = new SqlConnection(url))
             {
-                connection.Open();
+                await connection.OpenAsync();
                 string tablename =   e.GetType().Name;
                 string fliter = "";
                 string set = "";
@@ -227,7 +227,7 @@ namespace ZGAutoCenter.TimeTask
                 }
                 set = set.Substring(0, set.Length - 1);
                 string sql = $"UPDATE {tablename} SET {set} WHERE {fliter} ";
-                UrlSqlExcuteq(sql, connection);
+                await UrlSqlExcuteq(sql, connection);
             }
         }
 
@@ -263,14 +263,14 @@ namespace ZGAutoCenter.TimeTask
         {
 
             SqlCommand command = new SqlCommand(sql, connection);
-            var M = command.ExecuteScalar();
+            var M = command.ExecuteScalarAsync();
             return M;
         }
 
-        private object UrlSqlExcuteq(string sql, SqlConnection connectionurl)
+        private async Task<object> UrlSqlExcuteq(string sql, SqlConnection connectionurl)
         {
             SqlCommand command = new SqlCommand(sql, connectionurl);
-            var M = command.ExecuteScalar();
+            var M = command.ExecuteScalarAsync();
             return M;
         }
 
